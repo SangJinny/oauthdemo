@@ -1,5 +1,6 @@
 package com.example.oauthdemo.config;
 
+import com.example.oauthdemo.interceptor.XoauthInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +22,13 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+import javax.servlet.Filter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@ComponentScan(value = "com.example.oauthdemo")
 @EnableAuthorizationServer
 public class OauthServerConfig extends AuthorizationServerConfigurerAdapter {
 
@@ -38,45 +41,48 @@ public class OauthServerConfig extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private XoauthRequestFactory xoauthRequestFactory;
 
-    /*@Autowired
-    private InMemoryClientDetailsService clientDetailsService;*/
-
-    private Map<String, ClientDetails> clientDetailsStore;
+    @Autowired
+    private XoauthInterceptor xoauthInterceptor;
 
 
+
+    // Client에 대한 설정.
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("foo")
                 .secret("bar")
                 .authorizedGrantTypes("authorization_code", "refresh_token")
-                .scopes("public");
+                .scopes("public")
+                .autoApprove(true)
+                .redirectUris("http://localhost:8089/");
     }
 
+    // EndPoint 설정
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
                 .pathMapping("/oauth/authorize", "/xoauth/authorize")
                 .pathMapping("/oauth/token", "/xoauth/token")
+                .addInterceptor(xoauthInterceptor)
                 .requestFactory(xoauthRequestFactory)
                 .tokenStore(inmemoryTokenStore)
                 .authenticationManager(authenticationManager);
     }
 
+    // oauth 인증 서버에 대한 설정.
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security
                 .checkTokenAccess("isAuthenticated()")
-                .allowFormAuthenticationForClients();
+                .tokenKeyAccess("permitAll()")
+                //.allowFormAuthenticationForClients()
+                //.tokenEndpointAuthenticationFilters(Collections.singletonList(xoauthClientCredentialsTokenEndpointFilter))
+        ;
     }
 
     @Bean
     public TokenStore tokenStore() {
         return new InMemoryTokenStore();
     }
-
-/*    @Bean
-    public InMemoryClientDetailsService clientDetailsService() {
-        return new InMemoryClientDetailsService();
-    }*/
 }
