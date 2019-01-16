@@ -17,7 +17,7 @@ public class XoauthRequestFactory extends DefaultOAuth2RequestFactory {
     public XoauthRequestFactory(ClientDetailsService clientDetailsService) {
         super(clientDetailsService);
         super.setCheckUserScopes(false); // scope를 사용하지 않음.
-        System.out.println("XoauthRequestFactory CREATED!!");
+        System.out.println("@@ custom REQUEST FACTORY created!!");
     }
 
     @Override
@@ -28,7 +28,7 @@ public class XoauthRequestFactory extends DefaultOAuth2RequestFactory {
 
     @Override
     public AuthorizationRequest createAuthorizationRequest(Map<String, String> authorizationParameters) {
-        System.out.println("Authorization Request CALLED!!");
+        System.out.println("@@ custom REQUEST FACTORY called!!");
         return super.createAuthorizationRequest(authorizationParameters);
     }
 }

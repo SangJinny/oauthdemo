@@ -12,15 +12,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.ClientRegistrationException;
-import org.springframework.security.oauth2.provider.NoSuchClientException;
+import org.springframework.security.oauth2.provider.*;
 import org.springframework.security.oauth2.provider.client.InMemoryClientDetailsService;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
@@ -33,18 +32,17 @@ import java.util.Map;
 public class OauthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
     private TokenStore inmemoryTokenStore;
 
     @Autowired
-    private XoauthRequestFactory xoauthRequestFactory;
+    private OAuth2RequestFactory xoauthRequestFactory;
 
     @Autowired
     private XoauthInterceptor xoauthInterceptor;
 
-
+    @Autowired
+    @Qualifier("xoauthAuthenticationEntryPoint")
+    private AuthenticationEntryPoint xoauthAuthenticationEntryPoint;
 
     // Client에 대한 설정.
     @Override
@@ -55,7 +53,8 @@ public class OauthServerConfig extends AuthorizationServerConfigurerAdapter {
                 .authorizedGrantTypes("authorization_code", "refresh_token")
                 .scopes("public")
                 .autoApprove(true)
-                .redirectUris("http://localhost:8089/");
+                .redirectUris("http://localhost:8089/")
+        ;
     }
 
     // EndPoint 설정
@@ -67,7 +66,8 @@ public class OauthServerConfig extends AuthorizationServerConfigurerAdapter {
                 .addInterceptor(xoauthInterceptor)
                 .requestFactory(xoauthRequestFactory)
                 .tokenStore(inmemoryTokenStore)
-                .authenticationManager(authenticationManager);
+                ;
+                //.authenticationManager(authenticationManager);
     }
 
     // oauth 인증 서버에 대한 설정.
@@ -76,8 +76,7 @@ public class OauthServerConfig extends AuthorizationServerConfigurerAdapter {
         security
                 .checkTokenAccess("isAuthenticated()")
                 .tokenKeyAccess("permitAll()")
-                //.allowFormAuthenticationForClients()
-                //.tokenEndpointAuthenticationFilters(Collections.singletonList(xoauthClientCredentialsTokenEndpointFilter))
+                .authenticationEntryPoint(xoauthAuthenticationEntryPoint)
         ;
     }
 
