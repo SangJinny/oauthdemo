@@ -1,5 +1,6 @@
 package com.example.oauthdemo.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.util.FileCopyUtils;
 
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 public class RequestWrapper extends HttpServletRequestWrapper {
 
@@ -20,6 +22,9 @@ public class RequestWrapper extends HttpServletRequestWrapper {
     private byte[] httpRequestBodyByteArray;
     private ByteArrayInputStream bis;
 
+    public RequestWrapper(HttpServletRequest request) {
+        this("XOUATH-REQUEST-ID", request);
+    }
     public RequestWrapper(String requestId, HttpServletRequest request) {
         super(request);
         this.requestId = requestId;
@@ -70,8 +75,13 @@ public class RequestWrapper extends HttpServletRequestWrapper {
         this.requestId = requestId;
     }
 
-    public Object test() throws IOException {
+    public Object convertToObject() throws IOException {
         return objectMapper.readValue(httpRequestBodyByteArray, Object.class);
     }
+
+    public Map<String, String> convertToMap() throws IOException {
+        return objectMapper.readValue(httpRequestBodyByteArray, new TypeReference<Map<String, String>>(){});
+    }
+
 
 }

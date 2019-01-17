@@ -1,17 +1,16 @@
 package com.example.oauthdemo.config;
 
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.DefaultSecurityContextAccessor;
-import org.springframework.security.oauth2.provider.SecurityContextAccessor;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
+import org.springframework.security.oauth2.provider.*;
 import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class XoauthRequestFactory extends DefaultOAuth2RequestFactory {
 
+    //private final ClientDetailsService clientDetailsService;
     private SecurityContextAccessor securityContextAccessor = new DefaultSecurityContextAccessor();
 
     public XoauthRequestFactory(ClientDetailsService clientDetailsService) {
@@ -26,9 +25,8 @@ public class XoauthRequestFactory extends DefaultOAuth2RequestFactory {
         super.setSecurityContextAccessor(securityContextAccessor);
     }
 
-    @Override
     public AuthorizationRequest createAuthorizationRequest(Map<String, String> authorizationParameters) {
-        System.out.println("@@ custom REQUEST FACTORY called!!");
+        System.out.println("@@ custom createAuthorizationRequest called!!");
         return super.createAuthorizationRequest(authorizationParameters);
     }
 }

@@ -52,7 +52,7 @@ public class OauthServerConfig extends AuthorizationServerConfigurerAdapter {
                 .secret("bar")
                 .authorizedGrantTypes("authorization_code", "refresh_token")
                 .scopes("public")
-                .autoApprove(true)
+                //.autoApprove(true)
                 .redirectUris("http://localhost:8089/")
         ;
     }
