@@ -22,7 +22,7 @@ public class SpringSecurityConfigure extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http
             .csrf().disable()
-                //.addFilterBefore(new CustomFilter(), AnonymousAuthenticationFilter.class)
+                .addFilterBefore(new CustomFilter(), AnonymousAuthenticationFilter.class)
             .exceptionHandling().authenticationEntryPoint(xoauthAuthenticationEntryPoint)
         ;
     }

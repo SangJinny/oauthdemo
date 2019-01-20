@@ -40,7 +40,7 @@ public class CustomFilter implements Filter {
             }
         });
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
-                "xoauthu", "xoauthp", authorities);
+                "xoauthUser", "xoauthPassword", authorities);
         authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
         //authRequest.setAuthenticated(true);
 

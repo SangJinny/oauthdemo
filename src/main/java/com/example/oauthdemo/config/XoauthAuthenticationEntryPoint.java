@@ -1,7 +1,5 @@
 package com.example.oauthdemo.config;
 
-import com.example.oauthdemo.util.RequestWrapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
@@ -9,12 +7,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
-import org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -33,11 +29,13 @@ public class XoauthAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Autowired
     private OAuth2RequestFactory xoauthRequestFactory;
 
+    @Autowired
+    private AuthorizationCodeServices authorizationCodeServices;
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         System.out.println("@@ custom ENTRY POINT called!!");
 
-        AuthorizationCodeServices authorizationCodeServices = new InMemoryAuthorizationCodeServices();
         Map<String, String[]> requestParams = request.getParameterMap();
         Map<String, String> convertedParameters = new HashMap<>();
         requestParams.forEach((k,v) -> {
