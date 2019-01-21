@@ -1,8 +1,10 @@
 package com.example.oauthdemo.config;
 
+import com.example.oauthdemo.filter.CustomFilter;
 import com.example.oauthdemo.interceptor.XoauthInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -96,5 +98,13 @@ public class OauthServerConfig extends AuthorizationServerConfigurerAdapter {
         defaultTokenServices.setTokenStore(tokenStore());
         defaultTokenServices.setSupportRefreshToken(true);
         return defaultTokenServices;
+    }
+
+    @Bean
+    public FilterRegistrationBean<CustomFilter> getFilterRegistrationBean() {
+        FilterRegistrationBean<CustomFilter> filterRegistrationBean = new FilterRegistrationBean(new CustomFilter());
+        filterRegistrationBean.setName("customFilter");
+        filterRegistrationBean.addUrlPatterns("/xoauth/*");
+        return filterRegistrationBean;
     }
 }
